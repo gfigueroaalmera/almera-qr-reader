@@ -98,7 +98,6 @@ public  class BarcodeCaptureActivity extends AppCompatActivity implements Barcod
         mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(R.id.graphicOverlay);
         //getActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setTitle(getResources().getString(R.string.lector_qr));
 
