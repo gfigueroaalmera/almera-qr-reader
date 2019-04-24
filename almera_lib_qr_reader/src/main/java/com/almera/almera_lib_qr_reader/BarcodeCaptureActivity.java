@@ -34,9 +34,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.almera.almera_lib_qr_reader.camera.CameraSource;
@@ -56,7 +59,7 @@ import java.io.IOException;
  * rear facing camera. During detection overlay graphics are drawn to indicate the position,
  * size, and ID of each barcode.
  */
-public final class BarcodeCaptureActivity extends AppCompatActivity implements BarcodeGraphicTracker.BarcodeUpdateListener {
+public  class BarcodeCaptureActivity extends AppCompatActivity implements BarcodeGraphicTracker.BarcodeUpdateListener {
     private static final String TAG = "Barcode-reader";
 
     // intent request code to handle updating play services if needed.
@@ -74,6 +77,9 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
     private GraphicOverlay<BarcodeGraphic> mGraphicOverlay;
+    private CheckBox active_flash;
+    private CheckBox active_autofocus;
+
 
     // helper objects for detecting taps and pinches.
     private ScaleGestureDetector scaleGestureDetector;
@@ -90,28 +96,69 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(R.id.graphicOverlay);
+        //getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        setTitle(getResources().getString(R.string.lector_qr));
+
+        //getSupportActionBar().setHomeButtonEnabled(true);
         // read parameters from the intent used to launch the activity.
-        boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, false);
-        boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
+        final boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, false);
+        final boolean[] useFlash = {getIntent().getBooleanExtra(UseFlash, false)};
         automaticCapture = getIntent().getBooleanExtra(AutomaticCapture, false);
 
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
-            createCameraSource(autoFocus, useFlash);
+            createCameraSource(autoFocus, useFlash[0]);
         } else {
             requestCameraPermission();
         }
+        active_flash = findViewById(R.id.active_flash);
+        active_autofocus = findViewById(R.id.active_autofocus);
+        active_flash.setChecked(useFlash[0]);
+        active_autofocus.setChecked(autoFocus);
+        active_flash.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    mCameraSource.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
 
+                } else {
+                    mCameraSource.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                }
+                /*if (autoFocus) {
+                    mCameraSource.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                } else {
+                    mCameraSource.setFocusMode(null);
+                }*/
+             /*   try {
+                    mCameraSource =   camera.startPreview();
+                }catch (Exception e){}*/
+            }
+        });
+        active_autofocus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    mCameraSource.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+
+                } else {
+
+                }
+            }
+        });
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
-        if (automaticCapture) {
+        /*if (automaticCapture) {
             Snackbar.make(mGraphicOverlay, "Tap to capture. Pinch/Stretch to zoom",
                     Snackbar.LENGTH_LONG)
                     .show();
-        }
+
+        }*/
     }
 
     /**
@@ -146,6 +193,19 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                 .setAction(R.string.ok, listener)
                 .show();
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        switch (itemId) {
+            case android.R.id.home:
+                finish();
+                break;
+
+        }
+        return true;
+    }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {

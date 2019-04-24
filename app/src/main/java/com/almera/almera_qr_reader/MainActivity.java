@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, BarcodeCaptureActivity.class);
 
                 intent.putExtra(BarcodeCaptureActivity.AutoFocus, true);
-                intent.putExtra(BarcodeCaptureActivity.UseFlash, true);
+                intent.putExtra(BarcodeCaptureActivity.UseFlash, false);
                 intent.putExtra(BarcodeCaptureActivity.AutomaticCapture, true);
                 startActivityForResult(intent, RC_BARCODE_CAPTURE);
             }
