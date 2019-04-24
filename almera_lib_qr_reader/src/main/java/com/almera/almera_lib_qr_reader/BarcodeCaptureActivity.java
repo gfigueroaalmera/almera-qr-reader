@@ -48,6 +48,7 @@ import com.almera.almera_lib_qr_reader.camera.GraphicOverlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.common.util.SharedPreferencesUtils;
 import com.google.android.gms.vision.MultiProcessor;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
@@ -96,7 +97,6 @@ public  class BarcodeCaptureActivity extends AppCompatActivity implements Barcod
 
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay<BarcodeGraphic>) findViewById(R.id.graphicOverlay);
-        //getActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         setTitle(getResources().getString(R.string.lector_qr));
@@ -106,7 +106,10 @@ public  class BarcodeCaptureActivity extends AppCompatActivity implements Barcod
         final boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, false);
         final boolean[] useFlash = {getIntent().getBooleanExtra(UseFlash, false)};
         automaticCapture = getIntent().getBooleanExtra(AutomaticCapture, false);
-
+        int tema=getIntent().getIntExtra("tema",-1);
+        if(tema!=-1){
+            setTheme(tema);
+        }
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
@@ -123,32 +126,30 @@ public  class BarcodeCaptureActivity extends AppCompatActivity implements Barcod
             @SuppressLint("MissingPermission")
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                try{
+
                 if (b) {
                     mCameraSource.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
 
                 } else {
                     mCameraSource.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                 }
-                /*if (autoFocus) {
-                    mCameraSource.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-                } else {
-                    mCameraSource.setFocusMode(null);
-                }*/
-             /*   try {
-                    mCameraSource =   camera.startPreview();
-                }catch (Exception e){}*/
+
+                }catch (Exception e){}
             }
         });
         active_autofocus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @SuppressLint("MissingPermission")
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                try{
                 if (b) {
                     mCameraSource.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
 
                 } else {
-
+                    mCameraSource.setFocusMode(null);
                 }
+                }catch (Exception e){}
             }
         });
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());

@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(BarcodeCaptureActivity.AutoFocus, true);
                 intent.putExtra(BarcodeCaptureActivity.UseFlash, false);
                 intent.putExtra(BarcodeCaptureActivity.AutomaticCapture, true);
+                intent.putExtra("tema", R.style.AppTheme2);
                 startActivityForResult(intent, RC_BARCODE_CAPTURE);
             }
         });
