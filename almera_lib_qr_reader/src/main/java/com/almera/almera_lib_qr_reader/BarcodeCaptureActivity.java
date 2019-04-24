@@ -92,6 +92,10 @@ public  class BarcodeCaptureActivity extends AppCompatActivity implements Barcod
      */
     @Override
     public void onCreate(Bundle icicle) {
+        int tema=getIntent().getIntExtra("tema",-1);
+        if(tema!=-1){
+            setTheme(tema);
+        }
         super.onCreate(icicle);
         setContentView(R.layout.barcode_capture);
 
@@ -106,10 +110,7 @@ public  class BarcodeCaptureActivity extends AppCompatActivity implements Barcod
         final boolean autoFocus = getIntent().getBooleanExtra(AutoFocus, false);
         final boolean[] useFlash = {getIntent().getBooleanExtra(UseFlash, false)};
         automaticCapture = getIntent().getBooleanExtra(AutomaticCapture, false);
-        int tema=getIntent().getIntExtra("tema",-1);
-        if(tema!=-1){
-            setTheme(tema);
-        }
+
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
